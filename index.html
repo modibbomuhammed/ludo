@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ludo Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ludo-board">
+        <!-- The Ludo board will be represented using a grid -->
+        <div class="board-section red">
+            <div class="home"></div>
+            <div class="tokens">
+                <div class="token red">1</div>
+                <div class="token red">2</div>
+                <div class="token red">3</div>
+                <div class="token red">4</div>
+            </div>
+        </div>
+        <div class="board-section green">
+            <div class="home"></div>
+            <div class="tokens">
+                <div class="token green"></div>
+                <div class="token green"></div>
+                <div class="token green"></div>
+                <div class="token green"></div>
+            </div>
+        </div>
+        <div class="board-section yellow">
+            <div class="home"></div>
+            <div class="tokens">
+                <div class="token yellow"></div>
+                <div class="token yellow"></div>
+                <div class="token yellow"></div>
+                <div class="token yellow"></div>
+            </div>
+        </div>
+        <div class="board-section blue">
+            <div class="home"></div>
+            <div class="tokens">
+                <div class="token blue"></div>
+                <div class="token blue"></div>
+                <div class="token blue"></div>
+                <div class="token blue"></div>
+            </div>
+        </div>
+    </div>
+    <div class="dice-container">
+        <div class="dice" onclick="action()">Roll Dice</div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
