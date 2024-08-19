@@ -6,6 +6,10 @@ const numberOfPlayer = Number(prompt('Choose Number Of Players between 1 - 4'));
 
 let currentPlayers = allPlayers.slice(0,numberOfPlayer);
 
+const pieceProps = {active: false, finish: false, position: []}
+
+
 function play(){
-    
+    // check whose turn it is
+    // find out if there are any active players
 }
