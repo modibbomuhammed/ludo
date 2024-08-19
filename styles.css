@@ -174,3 +174,39 @@
             margin: auto;
             z-index: 1;
         }
+		#red1,
+        #blue1,
+        #green1,
+        #yellow1 {
+            z-index: 1 !important;
+        }
+        #red2,
+        #blue2,
+        #green2,
+        #yellow2 {
+            z-index: 2 !important;
+        }
+        #red3,
+        #blue3,
+        #green3,
+        #yellow3 {
+            z-index: 3 !important;
+        }
+        #red4,
+        #blue4,
+        #green4,
+        #yellow4 {
+            z-index: 4 !important;
+        }
+		#dice {
+            display: inline-block;
+        }
+
+        #die {
+            padding: 50px;
+            background-image: url("./assets/images/1.png");
+            background-color: rgba(0, 0, 255, 0);
+            background-size: contain;
+            border: 5px solid black;
+            border-radius: 5px;
+        }

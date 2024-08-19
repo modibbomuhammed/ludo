@@ -18,3 +18,8 @@ function move(t,e){
     // console.log('we move',e.target.getAttribute('data-arg'))
     console.log('we move',{t},{eNum: e.target.getAttribute('data-arg')});
 }
+
+function roll(t,event){
+    const randomNumber = Math.floor(Math.random() * 6) + 1;
+    t.style.backgroundImage = `url(./assets/images/${randomNumber}.png)`
+}
