@@ -132,3 +132,45 @@
 			font-size: 32px;
 			text-align: center;
 		}
+		#blue1,#blue2,#blue3,#blue4 {
+            background-image: linear-gradient(blue, rgb(0, 110, 255));
+            border: 1px solid black;
+            box-shadow: 3px 3px 5px black;
+            border-radius: 50%;
+            width: 90%;
+            height: 90%;
+            margin: auto;
+        }
+		#green1,#green2,#green3,#green4 {
+            background-image: linear-gradient(green, rgb(94, 255, 0));
+            border: 1px solid black;
+            box-shadow: 3px 3px 5px black;
+            border-radius: 50%;
+            width: 90%;
+            height: 90%;
+            margin: auto;
+            z-index: 1;
+        }
+
+        #yellow1,#yellow2,#yellow3,#yellow4 {
+            background-image: linear-gradient(yellow, rgb(255, 166, 0));
+            border: 1px solid black;
+            box-shadow: 3px 3px 5px black;
+            border-radius: 50%;
+            width: 90%;
+            height: 90%;
+            margin: auto;
+            z-index: 1;
+        }
+
+        #red1,#red2,#red3,#red4 {
+            background-image: linear-gradient(red, rgb(255, 191, 172));
+            border: 1px solid black;
+            box-shadow: 3px 3px 5px black;
+            border-radius: 50%;
+            width: 90%;
+            height: 90%;
+            margin: 2px;
+            margin: auto;
+            z-index: 1;
+        }

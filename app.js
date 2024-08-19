@@ -13,3 +13,8 @@ function play(){
     // check whose turn it is
     // find out if there are any active players
 }
+
+function move(t,e){
+    // console.log('we move',e.target.getAttribute('data-arg'))
+    console.log('we move',{t},{eNum: e.target.getAttribute('data-arg')});
+}
