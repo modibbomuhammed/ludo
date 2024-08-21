@@ -64,11 +64,14 @@ function play(){
     } else {
         start = true;
     }
+    console.log({turn})
+    currentPlayers[turn]
     // deactivate roll
     rollStatus = false;    
 }
 
 function move(t,e){
+    console.log({t, papa: t.parentElement});
     const clickedPiece = e.target.getAttribute('data-color');
     const [whoseTurn, initialPosition] = allPlayers[turn];
     if(clickedPiece === whoseTurn){
@@ -80,6 +83,7 @@ function move(t,e){
         if(randomNumber === 6){
             if(!getProps[pos].isActive){
                 // const [,startPosition] = allPlayers.find(([color]) => color === whoseTurn);
+                t.parentElement.innerHTML = ``;
                 document.getElementById(`pos${initialPosition}`).innerHTML = piece;
                 getProps[pos].isActive = true;
                 getProps[pos].position = 2;
@@ -89,13 +93,29 @@ function move(t,e){
                 getProps[pos].position += randomNumber;
                 document.getElementById(`pos${currentPosition}`).innerHTML = ``;
                 document.getElementById(`pos${currentPosition + randomNumber}`).innerHTML = piece;
-                turn -= 1;
+            }
+            turn = turn === 0 ? (currentPlayers.length - 1) : (turn - 1);
+        } else {
+            if(getProps[pos].isActive){
+                getProps[pos].sumOfMoves += randomNumber;
+                const { position: currentPosition } = getProps[pos]
+                getProps[pos].position += randomNumber;
+                document.getElementById(`pos${currentPosition}`).innerHTML = ``;
+                document.getElementById(`pos${currentPosition + randomNumber}`).innerHTML = piece;
+            } else {
+                const { pieceone, piecetwo, piecethree, piecefour } = getProps;
+                const check = [pieceone, piecetwo, piecethree, piecefour].map(obj => obj.isActive);
+                if(check.some(status => !!status)){
+                    alert('Play Another Piece')
+                    return;
+                } 
             }
         }
+        console.log("fullstop")
+        rollStatus = true;
         // const foundTile = document.getElementById(`pos${4}`);
         // psuedo code below begin here
         // find out if there are any active players
-        rollStatus = true;
     }
 }
 
