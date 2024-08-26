@@ -200,6 +200,10 @@
         }
 		#dice {
             display: inline-block;
+			/* position: relative; this is extra not in the original code*/
+			position: relative;
+			right: 200px;
+			top: -420px;
         }
 
         #die {

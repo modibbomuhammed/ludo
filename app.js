@@ -1,12 +1,12 @@
 // Ludo Game Play
 
-const allPlayers = [["blue", 1],["red",2],["green",2],["yellow",1]];
+const allPlayers = [["blue", 2],["red",15],["green",28],["yellow",41]];
 
 const numberOfPlayer = Number(prompt('Choose Number Of Players between 1 - 4'));
 
 let currentPlayers = allPlayers.slice(0,numberOfPlayer);
 
-let start = false;
+let started = false;
 
 let turn = 0;
 
@@ -59,13 +59,30 @@ currentPlayers = currentPlayers.map((arr) => new Piece(arr));
 
 function play(){
     // check whose turn it is
-    if(start){
-        turn = turn === (currentPlayers.length - 1) ? 0 : (turn + 1); 
+    turn = turn === (currentPlayers.length - 1) ? 0 : (turn + 1);
+    console.log({str: allPlayers[turn][0]});
+    const {pieceone, piecetwo, piecethree, piecefour} = currentPlayers[turn];
+    const check = [pieceone, piecetwo, piecethree, piecefour].filter(el => !!el.isActive).length;
+    if(check === 0){
+        // check if randomNumber is 6
+        if(randomNumber === 6) {
+            rollStatus = false;
+            return;
+        }
+        // change turn to the next player;
+        // roll again
+        play();
+        // document.querySelector('#message').innerHTML = `<h1>Change</h1>`
+        document.querySelector('#message').innerHTML = `<h3>${allPlayers[turn][9]}'s turn</h3>` 
+        // document.querySelector('#message').innerHTML = '<h3>Hello</h3>'
+    } else if(check === 1){
+        // take random number and move the only piece
+        // check[0], randomNumber
     } else {
-        start = true;
+        // wait for the move function
     }
     console.log({turn})
-    currentPlayers[turn]
+    // currentPlayers[turn]
     // deactivate roll
     rollStatus = false;    
 }
@@ -126,6 +143,10 @@ function roll(t,event){
         console.log({randomNumber})
         t.style.backgroundImage = `url(./assets/images/${randomNumber}.png)`;
     }
+    if(!started){
+        started = true;
+        return;
+    } 
     play();
 }
 
