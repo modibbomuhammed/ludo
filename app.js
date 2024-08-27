@@ -50,10 +50,16 @@ class Piece {
             sumOfMoves: 0,
             position: null
         };
-        anyPieceActive: () => {
-            const {pieceone, piecetwo, piecethree, piecefour} = this;
-            return [pieceone, piecetwo, piecethree, piecefour].filter(el => !!el.isActive).length;
-        }
+    }
+    pieceSituation(){
+        const {pieceone, piecetwo, piecethree, piecefour} = this;
+        return [pieceone, piecetwo, piecethree, piecefour];
+    }
+    anyPieceActive(){
+        return this.pieceSituation().filter(el => !!el.isActive).length;
+    }
+    findActive(){
+        return this.pieceSituation().find(el => el.isActive === true);
     }
 }
 
@@ -62,11 +68,8 @@ currentPlayers = currentPlayers.map((arr) => new Piece(arr));
 
 
 function play(){
-    // check whose turn it is
-    // changeTurn()
-    const {pieceone, piecetwo, piecethree, piecefour} = currentPlayers[turn];
-    const check = [pieceone, piecetwo, piecethree, piecefour].filter(el => !!el.isActive).length;
-    console.log({check,pieceone, piecetwo, piecethree, piecefour});
+    // Does the current Player have any active pieces
+    const check = currentPlayers[turn].anyPieceActive();
     if(check === 0){
         // check if randomNumber is 6
         if(randomNumber === 6) {
@@ -74,13 +77,14 @@ function play(){
             return;
         } else {
             console.log("coming here")
-            // change turn to the next player;
             changeTurn();
             return;
         }
     } else if(check === 1){
-        // take random number and move the only piece
-        // check[0], randomNumber
+        // move piece by randomNumber
+        const piece = currentPlayers[turn].findActive();
+        // move turn
+        changeTurn();
     } else {
         // wait for the move function
     }
@@ -144,10 +148,8 @@ function move(t,e){
 }
 
 function roll(t,event){
-    console.log('here', {rollStatus})
     if(rollStatus){
         randomNumber = Math.floor(Math.random() * 6) + 1;
-        console.log({randomNumber})
         t.style.backgroundImage = `url(./assets/images/${randomNumber}.png)`;
     }
     // if(!started){
