@@ -50,6 +50,10 @@ class Piece {
             sumOfMoves: 0,
             position: null
         };
+        anyPieceActive: () => {
+            const {pieceone, piecetwo, piecethree, piecefour} = this;
+            return [pieceone, piecetwo, piecethree, piecefour].filter(el => !!el.isActive).length;
+        }
     }
 }
 
@@ -59,22 +63,21 @@ currentPlayers = currentPlayers.map((arr) => new Piece(arr));
 
 function play(){
     // check whose turn it is
-    turn = turn === (currentPlayers.length - 1) ? 0 : (turn + 1);
-    console.log({str: allPlayers[turn][0]});
+    // changeTurn()
     const {pieceone, piecetwo, piecethree, piecefour} = currentPlayers[turn];
     const check = [pieceone, piecetwo, piecethree, piecefour].filter(el => !!el.isActive).length;
+    console.log({check,pieceone, piecetwo, piecethree, piecefour});
     if(check === 0){
         // check if randomNumber is 6
         if(randomNumber === 6) {
             rollStatus = false;
             return;
+        } else {
+            console.log("coming here")
+            // change turn to the next player;
+            changeTurn();
+            return;
         }
-        // change turn to the next player;
-        // roll again
-        play();
-        // document.querySelector('#message').innerHTML = `<h1>Change</h1>`
-        document.querySelector('#message').innerHTML = `<h3>${allPlayers[turn][9]}'s turn</h3>` 
-        // document.querySelector('#message').innerHTML = '<h3>Hello</h3>'
     } else if(check === 1){
         // take random number and move the only piece
         // check[0], randomNumber
@@ -87,8 +90,12 @@ function play(){
     rollStatus = false;    
 }
 
+function changeTurn(){
+    turn = turn === (currentPlayers.length - 1) ? 0 : (turn + 1);
+    document.querySelector('#message').innerHTML = `<h3>${allPlayers[turn][0]}'s turn</h3>`
+}
+
 function move(t,e){
-    console.log({t, papa: t.parentElement});
     const clickedPiece = e.target.getAttribute('data-color');
     const [whoseTurn, initialPosition] = allPlayers[turn];
     if(clickedPiece === whoseTurn){
@@ -96,7 +103,7 @@ function move(t,e){
         const pos = e.target.getAttribute('data-arg');
         const getProps = currentPlayers.find(el => el.color === whoseTurn);
         console.log({getProps});
-        const peice = `<div id="${whoseTurn}${convertWordsToNumber(pos)}" data-color="${whoseTurn}" data-arg="${pos}" onclick="move(this,event)"></div>`; 
+        const piece = `<div id="${whoseTurn}${convertWordsToNumber(pos)}" data-color="${whoseTurn}" data-arg="${pos}" onclick="move(this,event)"></div>`; 
         if(randomNumber === 6){
             if(!getProps[pos].isActive){
                 // const [,startPosition] = allPlayers.find(([color]) => color === whoseTurn);
@@ -143,10 +150,10 @@ function roll(t,event){
         console.log({randomNumber})
         t.style.backgroundImage = `url(./assets/images/${randomNumber}.png)`;
     }
-    if(!started){
-        started = true;
-        return;
-    } 
+    // if(!started){
+    //     started = true;
+    //     return;
+    // } 
     play();
 }
 
