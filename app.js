@@ -85,7 +85,8 @@ function play(){
             console.log({piece});
             // move piece
             const pieceToMove = `<div id="${whoseTurn}${convertWordsToNumber(piece.pieceNumber)}" data-color="${whoseTurn}" data-arg="piece${piece.pieceNumber}" onclick="move(this,event)"></div>`;
-            document.getElementById(`pos${piece.position}`).innerHTML = "";
+            // document.getElementById(`pos${piece.position}`).innerHTML = "";
+            tileStatus(piece.position, randomNumber, pieceToMove, piece);
             document.getElementById(`pos${(piece.position + randomNumber) > 52 ? 1 : (piece.position + randomNumber)}`).innerHTML = pieceToMove;
             piece.sumOfMoves += randomNumber;
             piece.position  = piece.position + randomNumber;
@@ -103,16 +104,14 @@ function changeTurn(){
 }
 
 function move(t,e){
+    console.log({t})
     const clickedPiece = e.target.getAttribute('data-color');
-    console.log({allPlayers, turn: allPlayers[turn]});
     const whoseTurn = allPlayers[turn];
-    console.log({turn, clickedPiece, whoseTurn});
     if(clickedPiece === whoseTurn){
         // retriece peice and number
         const pos = e.target.getAttribute('data-arg');
         const getProps = currentPlayers.find(el => el.color === whoseTurn);
-        const piece = `<div id="${whoseTurn}${convertWordsToNumber(pos)}" data-color="${whoseTurn}" data-arg="${pos}" onclick="move(this,event)"></div>`; 
-        console.log({rollStatus, randomNumber, getProps, pos});
+        const piece = `<div id="${whoseTurn}${convertWordsToNumber(pos)}" data-color="${whoseTurn}" data-arg="${pos}" onclick="move(this,event)"></div>`;
         if(randomNumber === 6){
             if(!getProps[pos].isActive){
                 t.parentElement.innerHTML = ``;
@@ -124,7 +123,8 @@ function move(t,e){
                 getProps[pos].sumOfMoves += randomNumber;
                 const { position: currentPosition } = getProps[pos]
                 getProps[pos].position += randomNumber;
-                document.getElementById(`pos${currentPosition}`).innerHTML = ``;
+                // check if the cell is protected
+                tileStatus(currentPosition, randomNumber, piece, t);
                 document.getElementById(`pos${(currentPosition + randomNumber) > 52 ? 1 : (currentPosition + randomNumber)}`).innerHTML = piece;
             }
         } else {
@@ -132,7 +132,7 @@ function move(t,e){
                 getProps[pos].sumOfMoves += randomNumber;
                 const { position: currentPosition } = getProps[pos]
                 getProps[pos].position += randomNumber;
-                document.getElementById(`pos${currentPosition}`).innerHTML = ``;
+                tileStatus(currentPosition, randomNumber, piece, t);
                 document.getElementById(`pos${(currentPosition + randomNumber) > 52 ? 1 : (currentPosition + randomNumber)}`).innerHTML = piece;
                 changeTurn();
             }
@@ -162,4 +162,31 @@ function convertWordsToNumber(strsplit){
         if(word === 'three') return 3;
         if(word === 'four') return 4;
     }
+}
+
+function tileStatus(currentPosition, randomNumber, piece,t){
+    console.log({currentPosition, randomNumber, piece,t})
+    const isProtectedFrom = !!document.getElementById(`pos${currentPosition}`).getAttribute('data-protected');
+    const isProtectedTo = !!document.getElementById(`pos${currentPosition+randomNumber}`).getAttribute('data-protected');
+    if(isProtectedFrom){
+        console.log('here')
+        document.getElementById(`pos${currentPosition}`).removeChild(t);    
+    } else {
+        console.log('here 1')
+        document.getElementById(`pos${currentPosition}`).innerHTML = ``;
+    }
+    if(isProtectedTo){
+        console.log('here 2', {err: document.getElementById(`pos${(currentPosition + randomNumber)}`), type: typeof(document.getElementById(`pos${(currentPosition + randomNumber)}`))})
+        document.getElementById(`pos${(currentPosition + randomNumber)}`).appendChild(piece);    
+    } else {
+        // how many peices are on the board
+        const howMany = document.getElementById(`pos${(currentPosition + randomNumber)}`).children.length;
+        console.log('here 3', {howMany,children: document.getElementById(`pos${(currentPosition + randomNumber)}`).children})
+        if(howMany === 1){
+            const back2Default = document.getElementById(`pos${(currentPosition + randomNumber)}`).children[0];
+            document.getElementById(`pos${(currentPosition + randomNumber)}`).firstElementChild()
+
+        }
+    }
+    document.getElementById(`pos${(currentPosition + randomNumber) > 52 ? 1 : (currentPosition + randomNumber)}`).innerHTML = piece;
 }
