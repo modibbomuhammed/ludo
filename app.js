@@ -14,6 +14,8 @@ let rollStatus = true;
 
 let randomNumber = 0;
 
+const protectedPieces = [];
+
 const homeStretch = 52;
 
 class Piece {
@@ -25,7 +27,7 @@ class Piece {
         this.pieceone = {
             isActive: false,
             protection: false,
-            pieceNumber: "one",
+            pieceNumber: 1,
             finish: false,
             sumOfMoves: -6,
             position: null
@@ -33,7 +35,7 @@ class Piece {
         this.piecetwo = {
             isActive: false,
             protection: false,
-            pieceNumber: "two",
+            pieceNumber: 2,
             finish: false,
             sumOfMoves: -6,
             position: null
@@ -41,7 +43,7 @@ class Piece {
         this.piecethree = {
             isActive: false,
             protection: false,
-            pieceNumber: "three",
+            pieceNumber: 3,
             finish: false,
             sumOfMoves: -6,
             position: null
@@ -49,7 +51,7 @@ class Piece {
         this.piecefour = {
             isActive: false,
             protection: false,
-            pieceNumber: "four",
+            pieceNumber: 4,
             finish: false,
             sumOfMoves: -6,
             position: null
@@ -64,6 +66,9 @@ class Piece {
     }
     findActive(){
         return this.pieceSituation().find(el => el.isActive === true);
+    }
+    findPiece(num){
+        return this.pieceSituation().map(p => p.pieceNumber === num);
     }
 }
 
@@ -82,12 +87,10 @@ function play(){
             // move piece by randomNumber
             const piece = currentPlayers[turn].findActive();
             const whoseTurn = allPlayers[turn];
-            console.log({piece});
             // move piece
-            const pieceToMove = `<div id="${whoseTurn}${convertWordsToNumber(piece.pieceNumber)}" data-color="${whoseTurn}" data-arg="piece${piece.pieceNumber}" onclick="move(this,event)"></div>`;
-            // document.getElementById(`pos${piece.position}`).innerHTML = "";
-            tileStatus(piece.position, randomNumber, pieceToMove, piece);
-            document.getElementById(`pos${(piece.position + randomNumber) > 52 ? 1 : (piece.position + randomNumber)}`).innerHTML = pieceToMove;
+            const pieceToMove = document.getElementById(`${whoseTurn}${piece.pieceNumber}`);
+            console.log('line 89')
+            tileStatus(piece.position, randomNumber, pieceToMove, `pos${piece.position}`);
             piece.sumOfMoves += randomNumber;
             piece.position  = piece.position + randomNumber;
             // move turn
@@ -104,18 +107,23 @@ function changeTurn(){
 }
 
 function move(t,e){
+    console.log('clicked')
     console.log({t})
     const clickedPiece = e.target.getAttribute('data-color');
     const whoseTurn = allPlayers[turn];
     if(clickedPiece === whoseTurn){
         // retriece peice and number
         const pos = e.target.getAttribute('data-arg');
+        const id = e.target.getAttribute('id');
+        const piece = document.getElementById(id);
         const getProps = currentPlayers.find(el => el.color === whoseTurn);
-        const piece = `<div id="${whoseTurn}${convertWordsToNumber(pos)}" data-color="${whoseTurn}" data-arg="${pos}" onclick="move(this,event)"></div>`;
+    
         if(randomNumber === 6){
+            console.log({props: getProps, pos, piece, typ: typeof piece})
             if(!getProps[pos].isActive){
                 t.parentElement.innerHTML = ``;
-                document.getElementById(`pos${getProps.startPosition}`).innerHTML = piece;
+                document.getElementById(`pos${getProps.startPosition}`).innerHTML = ``;
+                document.getElementById(`pos${getProps.startPosition}`).appendChild(piece);
                 getProps[pos].isActive = true;
                 getProps[pos].position = getProps.startPosition;
                 getProps[pos].sumOfMoves += randomNumber;
@@ -124,16 +132,19 @@ function move(t,e){
                 const { position: currentPosition } = getProps[pos]
                 getProps[pos].position += randomNumber;
                 // check if the cell is protected
+                console.log('line 140')
+                // tileStatus(currentPosition, randomNumber, piece, t);
                 tileStatus(currentPosition, randomNumber, piece, t);
-                document.getElementById(`pos${(currentPosition + randomNumber) > 52 ? 1 : (currentPosition + randomNumber)}`).innerHTML = piece;
+                // document.getElementById(`pos${(currentPosition + randomNumber) > 52 ? 1 : (currentPosition + randomNumber)}`).innerHTML = piece;
             }
         } else {
             if(getProps[pos].isActive){
                 getProps[pos].sumOfMoves += randomNumber;
                 const { position: currentPosition } = getProps[pos]
                 getProps[pos].position += randomNumber;
+                console.log('line 149')
                 tileStatus(currentPosition, randomNumber, piece, t);
-                document.getElementById(`pos${(currentPosition + randomNumber) > 52 ? 1 : (currentPosition + randomNumber)}`).innerHTML = piece;
+                // document.getElementById(`pos${(currentPosition + randomNumber) > 52 ? 1 : (currentPosition + randomNumber)}`).innerHTML = piece;
                 changeTurn();
             }
         }
@@ -142,6 +153,7 @@ function move(t,e){
 }
 
 function roll(t,event){
+    console.log('clicked to roll')
     if(rollStatus){
         randomNumber = Math.floor(Math.random() * 6) + 1;
         t.style.backgroundImage = `url(./assets/images/${randomNumber}.png)`;
@@ -164,29 +176,48 @@ function convertWordsToNumber(strsplit){
     }
 }
 
-function tileStatus(currentPosition, randomNumber, piece,t){
-    console.log({currentPosition, randomNumber, piece,t})
+function tileStatus(currentPosition, randomNumber, piece, id){
+    
+    let answer = currentPosition+randomNumber
+    if(answer > 52){
+        answer -= 52;
+        let getString = piece.getAttribute('id');
+        const pieceNum = Number(getString[getString.length - 1]);
+        getString = getString.substring(0, getString.length - 1);
+        const player = currentPlayers.find(el => el.color === getString);
+        const foundPiece = player.findPiece(pieceNum);
+        foundPiece.position = answer;
+    }  
+    console.log({currentPosition, randomNumber, piece, id, answer, checkPosition: piece.getAttribute('id')})
+    
     const isProtectedFrom = !!document.getElementById(`pos${currentPosition}`).getAttribute('data-protected');
-    const isProtectedTo = !!document.getElementById(`pos${currentPosition+randomNumber}`).getAttribute('data-protected');
+    const isProtectedTo = !!document.getElementById(`pos${answer}`).getAttribute('data-protected');
+    if(isProtectedTo){
+        // how many peices are on the board
+        const howMany = document.getElementById(`pos${(answer)}`).children.length;
+        console.log('here 3', {howMany,children: document.getElementById(`pos${(answer)}`).children})
+        // if only one piece and different color return him to default location
+        if(howMany === 1){
+            const back2Default = document.getElementById(`pos${(answer)}`).children[0];
+            // the line below is giving an error
+            document.getElementById(`pos${(answer)}`).firstElementChild()
+        }
+    } 
+    console.log('fullstop');
+    // check sum to see if you will divert to homeStretch
+    console.log({piece, appended: document.getElementById(id), id});
+    // document.getElementById(`pos${checkMyAnswer}`).appendChild(piece);
+    document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
     if(isProtectedFrom){
-        console.log('here')
-        document.getElementById(`pos${currentPosition}`).removeChild(t);    
+        // find out how many pieces are in the same position
+        // if none empty then place star    
+        document.getElementById(`pos${currentPosition}`).innerHTML = '';    
+        const star = document.createElement('span');
+        star.setAttribute('class','star');
+        star.innerHTML = `&#9733`;
+        document.getElementById(`pos${currentPosition}`).appendChild(star);
+        // otherwise search for pieces on this position and return them
     } else {
-        console.log('here 1')
         document.getElementById(`pos${currentPosition}`).innerHTML = ``;
     }
-    if(isProtectedTo){
-        console.log('here 2', {err: document.getElementById(`pos${(currentPosition + randomNumber)}`), type: typeof(document.getElementById(`pos${(currentPosition + randomNumber)}`))})
-        document.getElementById(`pos${(currentPosition + randomNumber)}`).appendChild(piece);    
-    } else {
-        // how many peices are on the board
-        const howMany = document.getElementById(`pos${(currentPosition + randomNumber)}`).children.length;
-        console.log('here 3', {howMany,children: document.getElementById(`pos${(currentPosition + randomNumber)}`).children})
-        if(howMany === 1){
-            const back2Default = document.getElementById(`pos${(currentPosition + randomNumber)}`).children[0];
-            document.getElementById(`pos${(currentPosition + randomNumber)}`).firstElementChild()
-
-        }
-    }
-    document.getElementById(`pos${(currentPosition + randomNumber) > 52 ? 1 : (currentPosition + randomNumber)}`).innerHTML = piece;
 }
