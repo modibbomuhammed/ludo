@@ -10,16 +10,16 @@
     <div class="outer">
 		<div class="box_row">
 			<div class="box" style="border:50px solid red;">
-				<div class="circle border_red">
+				<div class="circle border_red" id="red-pieceone">
 					<div id="red1" data-color="red" data-arg="pieceone" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_red">
+				<div class="circle border_red" id="red-piecetwo">
 					<div id="red2" data-color="red" data-arg="piecetwo" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_red">
+				<div class="circle border_red" id="red-piecethree">
 					<div id="red3" data-color="red" data-arg="piecethree" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_red">
+				<div class="circle border_red" id="red-piecefour">
 					<div id="red4" data-color="red" data-arg="piecefour" onclick="move(this,event)"></div>
 				</div>
 			</div>
@@ -31,41 +31,41 @@
 				</div>
 				<div class="v_lad_row">
 					<div class="v_lad_cell" id="pos24"></div>
-					<div class="v_lad_cell green"></div>
+					<div class="v_lad_cell green" id="greenHome1"></div>
 					<div class="v_lad_cell green" id="pos28" data-protected="true"><span class="star">&#9733;</span></div>
 				</div>
 				<div class="v_lad_row">
 					<div class="v_lad_cell green" id="pos23" data-protected="true"><span class="star">&#9733;</span></div>
-					<div class="v_lad_cell green"></div>
+					<div class="v_lad_cell green" id="greenHome2"></div>
 					<div class="v_lad_cell" id="pos29"></div>
 				</div>
 				<div class="v_lad_row">
 					<div class="v_lad_cell" id="pos22"></div>
-					<div class="v_lad_cell green"></div>
+					<div class="v_lad_cell green" id="greenHome3"></div>
 					<div class="v_lad_cell" id="pos30"></div>
 				</div>
 				<div class="v_lad_row">
 					<div class="v_lad_cell" id="pos21"></div>
-					<div class="v_lad_cell green"></div>
+					<div class="v_lad_cell green" id="greenHome4"></div>
 					<div class="v_lad_cell" id="pos31"></div>
 				</div>
 				<div class="v_lad_row">
 					<div class="v_lad_cell" id="pos20"></div>
-					<div class="v_lad_cell green"></div>
+					<div class="v_lad_cell green" id="greenHome5"></div>
 					<div class="v_lad_cell" id="pos32"></div>
 				</div>
 			</div>
 			<div class="box" style="border:50px solid green;">
-				<div class="circle border_green">
+				<div class="circle border_green" id="green-pieceone">
 					<div id="green1" data-color="green" data-arg="pieceone" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_green">
+				<div class="circle border_green" id="green-piecetwo">
 					<div id="green2" data-color="green" data-arg="piecetwo" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_green">
+				<div class="circle border_green" id="green-piecethree">
 					<div id="green3" data-color="green" data-arg="piecethree" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_green">
+				<div class="circle border_green" id="green-piecefour">
 					<div id="green4" data-color="green" data-arg="piecefour" onclick="move(this,event)"></div>
 				</div>
 			</div>
@@ -82,11 +82,11 @@
 			</div>
 			<div class="h_lad_row">
 				<div class="h_lad_cell" id="pos13"></div>
-				<div class="h_lad_cell red"></div>
-				<div class="h_lad_cell red"></div>
-				<div class="h_lad_cell red"></div>
-				<div class="h_lad_cell red"></div>
-				<div class="h_lad_cell red"></div>
+				<div class="h_lad_cell red" id="redHome1"></div>
+				<div class="h_lad_cell red" id="redHome2"></div>
+				<div class="h_lad_cell red" id="redHome3"></div>
+				<div class="h_lad_cell red" id="redHome4"></div>
+				<div class="h_lad_cell red" id="redHome5"></div>
 			</div>
 			<div class="h_lad_row">
 				<div class="h_lad_cell" id="pos12"></div>
@@ -108,11 +108,11 @@
 				<div class="h_lad_cell" id="pos38"></div>
 			</div>
 			<div class="h_lad_row">
-				<div class="h_lad_cell yellow"></div>
-				<div class="h_lad_cell yellow"></div>
-				<div class="h_lad_cell yellow"></div>
-				<div class="h_lad_cell yellow"></div>
-				<div class="h_lad_cell yellow"></div>
+				<div class="h_lad_cell yellow" id="yellowHome5"></div>
+				<div class="h_lad_cell yellow" id="yellowHome4"></div>
+				<div class="h_lad_cell yellow" id="yellowHome3"></div>
+				<div class="h_lad_cell yellow" id="yellowHome2"></div>
+				<div class="h_lad_cell yellow" id="yellowHome1"></div>
 				<div class="h_lad_cell" id="pos39"></div>
 			</div>
 			<div class="h_lad_row">
@@ -128,43 +128,43 @@
 		</div>
 		<div class="box_row">
 			<div class="box" style="border:50px solid blue;">
-				<div class="circle border_blue">
+				<div class="circle border_blue" id="blue-pieceone">
 					<div id="blue1" data-color="blue" data-arg="pieceone" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_blue">
+				<div class="circle border_blue" id="blue-piecetwo">
 					<div id="blue2" data-color="blue" data-arg="piecetwo" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_blue">
+				<div class="circle border_blue" id="blue-piecethree">
 					<div id="blue3" data-color="blue" data-arg="piecethree" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_blue">
+				<div class="circle border_blue" id="blue-piecefour">
 					<div id="blue4" data-color="blue" data-arg="piecefour" onclick="move(this,event)"></div>
 				</div>
 			</div>
 			<div class="v_lad">
 				<div class="v_lad_row">
 					<div class="v_lad_cell" id="pos6"></div>
-					<div class="v_lad_cell blue"></div>
+					<div class="v_lad_cell blue" id="blueHome5"></div>
 					<div class="v_lad_cell" id="pos46"></div>
 				</div>
 				<div class="v_lad_row">
 					<div class="v_lad_cell" id="pos5"></div>
-					<div class="v_lad_cell blue"></div>
+					<div class="v_lad_cell blue" id="blueHome4"></div>
 					<div class="v_lad_cell" id="pos47"></div>
 				</div>
 				<div class="v_lad_row">
 					<div class="v_lad_cell" id="pos4"></div>
-					<div class="v_lad_cell blue"></div>
+					<div class="v_lad_cell blue" id="blueHome3"></div>
 					<div class="v_lad_cell" id="pos48"></div>
 				</div>
 				<div class="v_lad_row">
 					<div class="v_lad_cell" id="pos3"></div>
-					<div class="v_lad_cell blue"></div>
+					<div class="v_lad_cell blue" id="blueHome2"></div>
 					<div class="v_lad_cell blue" id="pos49" data-protected="true"><span class="star">&#9733;</span></div>
 				</div>
 				<div class="v_lad_row">
 					<div class="v_lad_cell blue" id="pos2" data-protected="true"><span class="star">&#9733;</span></div>
-					<div class="v_lad_cell blue"></div>
+					<div class="v_lad_cell blue" id="blueHome1"></div>
 					<div class="v_lad_cell" id="pos50"></div>
 				</div>
 				<div class="v_lad_row">
@@ -174,16 +174,16 @@
 				</div>
 			</div>
 			<div class="box" style="border:50px solid yellow;">
-				<div class="circle border_yellow">
+				<div class="circle border_yellow" id="yellow-pieceone">
 					<div id="yellow1" data-color="yellow" data-arg="pieceone" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_yellow">
+				<div class="circle border_yellow" id="yellow-piecetwo">
 					<div id="yellow2" data-color="yellow" data-arg="piecetwo" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_yellow">
+				<div class="circle border_yellow" id="yellow-piecetwo">
 					<div id="yellow3" data-color="yellow" data-arg="piecethree" onclick="move(this,event)"></div>
 				</div>
-				<div class="circle border_yellow">
+				<div class="circle border_yellow" id="yellow-piecetwo">
 					<div id="yellow4" data-color="yellow" data-arg="piecefour" onclick="move(this,event)"></div>
 				</div>
 			</div>

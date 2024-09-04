@@ -30,7 +30,7 @@ class Piece {
             pieceNumber: 1,
             finish: false,
             sumOfMoves: -6,
-            position: null
+            position: null,
         };
         this.piecetwo = {
             isActive: false,
@@ -57,6 +57,11 @@ class Piece {
             position: null
         };
     }
+    reset(whichPiece){
+        this[whichPiece].isActive = false;
+        this[whichPiece].sumOfMoves = -6;
+        this[whichPiece].position = null;
+    }
     pieceSituation(){
         const {pieceone, piecetwo, piecethree, piecefour} = this;
         return [pieceone, piecetwo, piecethree, piecefour];
@@ -68,7 +73,7 @@ class Piece {
         return this.pieceSituation().find(el => el.isActive === true);
     }
     findPiece(num){
-        return this.pieceSituation().map(p => p.pieceNumber === num);
+        return this.pieceSituation().find(p => p.pieceNumber === num);
     }
 }
 
@@ -153,9 +158,10 @@ function move(t,e){
 }
 
 function roll(t,event){
-    console.log('clicked to roll')
+    console.log('clicked to roll', {rollStatus})
     if(rollStatus){
-        randomNumber = Math.floor(Math.random() * 6) + 1;
+        // randomNumber = Math.floor(Math.random() * 6) + 1;
+        randomNumber = Number(prompt('Please Enter A Number'));
         t.style.backgroundImage = `url(./assets/images/${randomNumber}.png)`;
     }
     play();
@@ -174,7 +180,7 @@ function convertWordsToNumber(strsplit){
         if(word === 'three') return 3;
         if(word === 'four') return 4;
     }
-}
+};
 
 function tileStatus(currentPosition, randomNumber, piece, id){
     
@@ -187,22 +193,30 @@ function tileStatus(currentPosition, randomNumber, piece, id){
         const player = currentPlayers.find(el => el.color === getString);
         const foundPiece = player.findPiece(pieceNum);
         foundPiece.position = answer;
-    }  
+    }
+
+    if(piece.sumOfMoves > 52){
+
+    }
     console.log({currentPosition, randomNumber, piece, id, answer, checkPosition: piece.getAttribute('id')})
     
     const isProtectedFrom = !!document.getElementById(`pos${currentPosition}`).getAttribute('data-protected');
     const isProtectedTo = !!document.getElementById(`pos${answer}`).getAttribute('data-protected');
-    if(isProtectedTo){
+    if(!isProtectedTo){
         // how many peices are on the board
-        const howMany = document.getElementById(`pos${(answer)}`).children.length;
-        console.log('here 3', {howMany,children: document.getElementById(`pos${(answer)}`).children})
-        // if only one piece and different color return him to default location
-        if(howMany === 1){
+        const piecesOnSquare = document.getElementById(`pos${(answer)}`).children;
+        const color = piecesOnSquare[0].getAttribute('data-color');
+        if(piecesOnSquare.length === 1 && allPlayers[turn] !== color){
+            // if only one piece and different color return him to default location
             const back2Default = document.getElementById(`pos${(answer)}`).children[0];
-            // the line below is giving an error
-            document.getElementById(`pos${(answer)}`).firstElementChild()
+            document.getElementById(`pos${(answer)}`).innerHTML = '';
+            const foundIndex = currentPlayers.findIndex(player => player.color === color);
+            currentPlayers[foundIndex].reset(back2Default.getAttribute('data-arg'))
+            document.getElementById(`${back2Default.getAttribute('data-color')}-${back2Default.getAttribute('data-arg')}`).append(back2Default);
         }
-    } 
+    } else {
+        document.getElementById(`pos${answer}`).innerHTML = ``;    
+    }
     console.log('fullstop');
     // check sum to see if you will divert to homeStretch
     console.log({piece, appended: document.getElementById(id), id});
@@ -220,4 +234,4 @@ function tileStatus(currentPosition, randomNumber, piece, id){
     } else {
         document.getElementById(`pos${currentPosition}`).innerHTML = ``;
     }
-}
+};
