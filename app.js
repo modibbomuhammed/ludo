@@ -97,9 +97,9 @@ function play(){
                 tileStatus(piece.position, randomNumber, pieceToMove, `pos${piece.position}`);
                 piece.position  = piece.position + randomNumber;
             }
+            // if no active piece and random number is not 6 move on
+            changeTurn();
         }  
-        // if no active piece and random number is not 6 move on
-        changeTurn();
     }
 }
 
@@ -212,7 +212,7 @@ function tileStatus(currentPosition, randomNumber, piece, id){
     
     const isProtectedFrom = !!document.getElementById(`pos${currentPosition}`).getAttribute('data-protected');
     const isProtectedTo = !!document.getElementById(`pos${answer}`).getAttribute('data-protected');
-    if(!isProtectedTo){
+    if(isProtectedTo){
         // how many peices are on the board
         const piecesOnSquare = document.getElementById(`pos${(answer)}`).children;
         // console.log({piecesOnSquare, length: piecesOnSquare.length, turn: allPlayers[turn]})
@@ -226,7 +226,7 @@ function tileStatus(currentPosition, randomNumber, piece, id){
             // document.getElementById(`pos${(answer)}`).innerHTML = '';
         }
     } else {
-        document.getElementById('answer').innerHTML = '';
+        document.getElementById(`pos${answer}`).innerHTML = '';
     } 
     console.log('fullstop');
     // check sum to see if you will divert to homeStretch
