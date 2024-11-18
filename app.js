@@ -212,15 +212,23 @@ function tileStatus(currentPosition, randomNumber, piece, id){
     } 
 
     if(sumOfMoves > 50){
+        const newHomePosition = sumOfMoves-50;
         if(sumOfMoves < 56){
-            const newHomePosition = sumOfMoves-52+answer;
+            console.log({newHomePosition, home: foundPiece.homeRun})
             const formString = `${getString}Home${newHomePosition}`;
             console.log('reaching here', {getString,formString, answer,pieceId: piece.getAttribute('id')});
             document.getElementById(formString).append(document.getElementById(`${piece.getAttribute('id')}`));
-            foundPiece.homeRun ? document.getElementById(`${getString}Home${newHomePosition}`).innerHTML = '' : document.getElementById(`pos${currentPosition}`).innerHTML = '';
+            // foundPiece.homeRun ? document.getElementById(`${getString}Home${newHomePosition-randomNumber}`).innerHTML = '' : document.getElementById(`pos${currentPosition}`).innerHTML = '';
+            if(foundPiece.homeRun) {
+                console.log({result: newHomePosition-randomNumber});
+                document.getElementById(`${getString}Home${newHomePosition-randomNumber}`).innerHTML = '';
+            } else {
+                document.getElementById(`pos${currentPosition}`).innerHTML = '';
+            }
         } else if(sumOfMoves === 56) {
-            document.getElementById(`${getString}Home${currentPosition}`).innerHTML = '';
+            document.getElementById(`${getString}Home${newHomePosition}`).innerHTML = '';
             foundPiece.finish = true;
+            console.log({foundPiece})
             // code to remove him from eligible players
             if(player.checkFinish()){
 
