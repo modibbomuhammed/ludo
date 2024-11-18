@@ -33,6 +33,7 @@ class Piece {
             finish: false,
             sumOfMoves: -6,
             position: null,
+            homeRun: false
         };
         this.piecetwo = {
             isActive: false,
@@ -40,7 +41,8 @@ class Piece {
             pieceNumber: 2,
             finish: false,
             sumOfMoves: -6,
-            position: null
+            position: null,
+            homeRun: false
         };
         this.piecethree = {
             isActive: false,
@@ -48,7 +50,8 @@ class Piece {
             pieceNumber: 3,
             finish: false,
             sumOfMoves: -6,
-            position: null
+            position: null,
+            homeRun: false
         };
         this.piecefour = {
             isActive: false,
@@ -56,7 +59,8 @@ class Piece {
             pieceNumber: 4,
             finish: false,
             sumOfMoves: -6,
-            position: null
+            position: null,
+            homeRun: false
         };
     }
     reset(whichPiece){
@@ -77,6 +81,9 @@ class Piece {
     findPiece(num){
         return this.pieceSituation().find(p => p.pieceNumber === num);
     }
+    checkFinish(){
+        return this.pieceSituation.every(p => !!p.finish);
+    }
 }
 
 currentPlayers = currentPlayers.map((arr) => new Piece(arr));
@@ -95,7 +102,9 @@ function play(){
                 console.log('line 89')
                 piece.sumOfMoves += randomNumber;
                 tileStatus(piece.position, randomNumber, pieceToMove, `pos${piece.position}`);
-                piece.position  = piece.position + randomNumber;
+                if(piece.sumOfMoves < 50){
+                    piece.position  = piece.position + randomNumber;
+                }
             }
             // if no active piece and random number is not 6 move on
             changeTurn();
@@ -186,27 +195,40 @@ function convertWordsToNumber(strsplit){
 };
 
 function tileStatus(currentPosition, randomNumber, piece, id){
-    
+    console.log({note: 'what is the value????',currentPosition, randomNumber, piece, id})
     let answer = currentPosition+randomNumber
     let getString = piece.getAttribute('id');
     const pieceNum = Number(getString[getString.length - 1]);
     getString = getString.substring(0, getString.length - 1);
     const player = currentPlayers.find(el => el.color === getString);
     const foundPiece = player.findPiece(pieceNum);
+    const { sumOfMoves } = foundPiece;
 
-    console.log({foundPiece, sum: foundPiece.sumOfMoves})
+    console.log({foundPiece, sum: sumOfMoves})
 
     if(answer > 52){
         answer -= 52;
         foundPiece.position = answer;
-    }
+    } 
 
-    if(foundPiece.sumOfMoves > 50){
-        const formString = `${getString}Home${answer}`
-        console.log('reaching here', {getString,formString, answer,pieceId: piece.getAttribute('id')});
-        document.getElementById(formString).append(document.getElementById(`${piece.getAttribute('id')}`));
-        document.getElementById(`pos${currentPosition}`).innerHTML = '';
-        return;
+    if(sumOfMoves > 50){
+        if(sumOfMoves < 56){
+            const newHomePosition = sumOfMoves-52+answer;
+            const formString = `${getString}Home${newHomePosition}`;
+            console.log('reaching here', {getString,formString, answer,pieceId: piece.getAttribute('id')});
+            document.getElementById(formString).append(document.getElementById(`${piece.getAttribute('id')}`));
+            foundPiece.homeRun ? document.getElementById(`${getString}Home${newHomePosition}`).innerHTML = '' : document.getElementById(`pos${currentPosition}`).innerHTML = '';
+        } else if(sumOfMoves === 56) {
+            document.getElementById(`${getString}Home${currentPosition}`).innerHTML = '';
+            foundPiece.finish = true;
+            // code to remove him from eligible players
+            if(player.checkFinish()){
+
+            }
+            return;
+        }
+        foundPiece.homeRun = true;
+        return
     }
     // console.log({currentPosition, randomNumber, piece, id, answer, checkPosition: piece.getAttribute('id')})
     
