@@ -82,7 +82,7 @@ class Piece {
         return this.pieceSituation().find(p => p.pieceNumber === num);
     }
     checkFinish(){
-        return this.pieceSituation.every(p => !!p.finish);
+        return this.pieceSituation().every(p => !!p.finish);
     }
 }
 
@@ -226,7 +226,7 @@ function tileStatus(currentPosition, randomNumber, piece, id){
                 document.getElementById(`pos${currentPosition}`).innerHTML = '';
             }
         } else if(sumOfMoves === 56) {
-            document.getElementById(`${getString}Home${newHomePosition}`).innerHTML = '';
+            document.getElementById(`${getString}Home${newHomePosition - randomNumber}`).innerHTML = '';
             foundPiece.finish = true;
             console.log({foundPiece})
             // code to remove him from eligible players
@@ -234,6 +234,10 @@ function tileStatus(currentPosition, randomNumber, piece, id){
 
             }
             return;
+        } else {
+            console.log({note: 'checking before', sumB4: foundPiece.sumOfMoves})
+            foundPiece.sumOfMoves = sumOfMoves - randomNumber;
+            console.log({note: 'checking after', sumAfter4: foundPiece.sumOfMoves})
         }
         foundPiece.homeRun = true;
         return
