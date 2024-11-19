@@ -8,6 +8,10 @@ let currentPlayers = allPlayers.slice(0,numberOfPlayer);
 
 const disabled = allPlayers.map(color => ({color, disabledStatus: false}));
 
+const protectedTileNumber = [2,10,15,23,28,36,41,49];
+
+const protectedTileStatus = protectedTileNumber.map(num => ({tileNumber: num, currentPieces: []}));
+
 let started = false;
 
 let turn = 0;
@@ -238,15 +242,15 @@ function tileStatus(currentPosition, randomNumber, piece, id){
     const piecesOnSquare = [].slice.call(document.getElementById(`pos${(answer)}`).children);
 
     console.log({isProtectedFrom, status: !!isProtectedFrom, isProtectedTo, status1: !!isProtectedTo, piecesOnSquare});
-    // how many peices are on the board
     
     //check if future tile is protected
     if(isProtectedTo){
-        piecesOnSquare.forEach(element => {
-            console.log({element})
-        });
+        const tilesOnfoundProtectedTile = protectedTileStatus.find(tile => tile.tileNumber === answer).currentPieces;
+        if(piecesOnSquare.length === 1 && tilesOnfoundProtectedTile.length === 0) document.getElementById(`pos${answer}`).innerHTML = '';
         console.log({piecesOnSquare, length: piecesOnSquare.length, turn: allPlayers[turn]});
-        document.getElementById(`pos${answer}`).innerHTML = '';
+        // how many peices are on the board
+        console.log({piece, foundPiece});
+        tilesOnfoundProtectedTile.push(createTile(piece));
         document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
     } else {
         // when future title is not protected
@@ -281,3 +285,19 @@ function tileStatus(currentPosition, randomNumber, piece, id){
         document.getElementById(`pos${currentPosition}`).innerHTML = ``;
     }
 };
+
+function createTile(piece){
+    // Create the inner div
+    const innerDiv = document.createElement('div');
+    innerDiv.id = piece.getAttribute('id');
+    innerDiv.setAttribute('data-color', piece.getAttribute('dataset').color);
+    innerDiv.setAttribute('data-arg', piece.getAttribute('dataset').arg);
+    innerDiv.setAttribute('onclick', 'move(this,event)');
+    
+    return innerDiv;
+}
+
+
+// next steps
+// populate and de-populate tileStatus Array
+// continue from line 253
