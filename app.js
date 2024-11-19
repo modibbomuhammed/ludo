@@ -214,42 +214,42 @@ function tileStatus(currentPosition, randomNumber, piece, id){
     if(sumOfMoves > 50){
         const newHomePosition = sumOfMoves-50;
         if(sumOfMoves < 56){
-            console.log({newHomePosition, home: foundPiece.homeRun})
             const formString = `${getString}Home${newHomePosition}`;
-            console.log('reaching here', {getString,formString, answer,pieceId: piece.getAttribute('id')});
             document.getElementById(formString).append(document.getElementById(`${piece.getAttribute('id')}`));
-            // foundPiece.homeRun ? document.getElementById(`${getString}Home${newHomePosition-randomNumber}`).innerHTML = '' : document.getElementById(`pos${currentPosition}`).innerHTML = '';
-            if(foundPiece.homeRun) {
-                console.log({result: newHomePosition-randomNumber});
-                document.getElementById(`${getString}Home${newHomePosition-randomNumber}`).innerHTML = '';
-            } else {
-                document.getElementById(`pos${currentPosition}`).innerHTML = '';
-            }
+            foundPiece.homeRun ? document.getElementById(`${getString}Home${newHomePosition-randomNumber}`).innerHTML = '' : document.getElementById(`pos${currentPosition}`).innerHTML = '';
         } else if(sumOfMoves === 56) {
             document.getElementById(`${getString}Home${newHomePosition - randomNumber}`).innerHTML = '';
             foundPiece.finish = true;
-            console.log({foundPiece})
-            // code to remove him from eligible players
+            // code to remove him from eligible players when all pieces are off the board
             if(player.checkFinish()){
 
             }
             return;
         } else {
-            console.log({note: 'checking before', sumB4: foundPiece.sumOfMoves})
             foundPiece.sumOfMoves = sumOfMoves - randomNumber;
-            console.log({note: 'checking after', sumAfter4: foundPiece.sumOfMoves})
         }
         foundPiece.homeRun = true;
         return
     }
     // console.log({currentPosition, randomNumber, piece, id, answer, checkPosition: piece.getAttribute('id')})
     
-    const isProtectedFrom = !!document.getElementById(`pos${currentPosition}`).getAttribute('data-protected');
-    const isProtectedTo = !!document.getElementById(`pos${answer}`).getAttribute('data-protected');
+    const isProtectedFrom = document.getElementById(`pos${currentPosition}`).getAttribute('data-protected');
+    const isProtectedTo = document.getElementById(`pos${answer}`).getAttribute('data-protected');
+    const piecesOnSquare = [].slice.call(document.getElementById(`pos${(answer)}`).children);
+
+    console.log({isProtectedFrom, status: !!isProtectedFrom, isProtectedTo, status1: !!isProtectedTo, piecesOnSquare});
+    // how many peices are on the board
+    
+    //check if future tile is protected
     if(isProtectedTo){
-        // how many peices are on the board
-        const piecesOnSquare = document.getElementById(`pos${(answer)}`).children;
-        // console.log({piecesOnSquare, length: piecesOnSquare.length, turn: allPlayers[turn]})
+        piecesOnSquare.forEach(element => {
+            console.log({element})
+        });
+        console.log({piecesOnSquare, length: piecesOnSquare.length, turn: allPlayers[turn]});
+        document.getElementById(`pos${answer}`).innerHTML = '';
+        document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
+    } else {
+        // when future title is not protected
         if(piecesOnSquare.length === 1 && allPlayers[turn] !== piecesOnSquare[0].getAttribute('data-color')){
             // if only one piece and different color return him to default location
             const back2Default = document.getElementById(`pos${(answer)}`).children[0];
@@ -258,15 +258,16 @@ function tileStatus(currentPosition, randomNumber, piece, id){
             currentPlayers[foundIndex].reset(back2Default.getAttribute('data-arg'))
             document.getElementById(`${back2Default.getAttribute('data-color')}-${back2Default.getAttribute('data-arg')}`).append(back2Default);
             // document.getElementById(`pos${(answer)}`).innerHTML = '';
+        } else {
+            document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
         }
-    } else {
-        document.getElementById(`pos${answer}`).innerHTML = '';
     } 
     console.log('fullstop');
     // check sum to see if you will divert to homeStretch
     console.log({piece, appended: document.getElementById(id), id});
     // document.getElementById(`pos${checkMyAnswer}`).appendChild(piece);
     document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
+    // handle the tile you are leaving
     if(isProtectedFrom){
         // find out how many pieces are in the same position
         // if none empty then place star    
