@@ -8,9 +8,7 @@ let currentPlayers = allPlayers.slice(0,numberOfPlayer);
 
 const disabled = allPlayers.map(color => ({color, disabledStatus: false}));
 
-const protectedTileNumber = [2,10,15,23,28,36,41,49];
-
-const protectedTileStatus = protectedTileNumber.map(num => ({tileNumber: num, currentPieces: []}));
+const protectedTileStatus = [2,10,15,23,28,36,41,49].map(num => ({tileNumber: num, currentPieces: []}));
 
 let started = false;
 
@@ -37,7 +35,8 @@ class Piece {
             finish: false,
             sumOfMoves: -6,
             position: null,
-            homeRun: false
+            homeRun: false,
+            hidden: false
         };
         this.piecetwo = {
             isActive: false,
@@ -46,7 +45,8 @@ class Piece {
             finish: false,
             sumOfMoves: -6,
             position: null,
-            homeRun: false
+            homeRun: false,
+            hidden: false
         };
         this.piecethree = {
             isActive: false,
@@ -55,7 +55,8 @@ class Piece {
             finish: false,
             sumOfMoves: -6,
             position: null,
-            homeRun: false
+            homeRun: false,
+            hidden: false
         };
         this.piecefour = {
             isActive: false,
@@ -64,7 +65,8 @@ class Piece {
             finish: false,
             sumOfMoves: -6,
             position: null,
-            homeRun: false
+            homeRun: false,
+            hidden: false
         };
     }
     reset(whichPiece){
@@ -87,6 +89,9 @@ class Piece {
     }
     checkFinish(){
         return this.pieceSituation().every(p => !!p.finish);
+    }
+    anyPieceHidden(){
+        return this.pieceSituation().filter(p => p.hidden);
     }
 }
 
@@ -118,11 +123,22 @@ function play(){
 
 function changeTurn(){
     turn = turn === (currentPlayers.length - 1) ? 0 : (turn + 1);
-    document.querySelector('#message').innerHTML = `<h3>${allPlayers[turn]}'s turn</h3>`;    
+    document.querySelector('#message').innerHTML = `<h3>${allPlayers[turn]}'s turn</h3>`;
+    // find out whose turn it is
+    const hiddenPieces = currentPlayers[turn].anyPieceHidden();
+    if(hiddenPieces.length){
+        hiddenPieces.forEach(({ pieceNumber, position }) => {
+            const color = allPlayers[turn];
+            const newTile = createTile({id: `${color}${pieceNumber}`, arg: `piece${convertNumbersToWords(pieceNumber)}`,color },false);
+            document.getElementById(`pos${position}`).innerHTML = '';
+            document.getElementById(`pos${position}`).appendChild(newTile);
+        })
+    }
+    // find out if there are any hidden pieces
+    // display hidden pieces    
 }
 
 function move(t,e){
-    console.log({moveRoll: rollStatus})
     const clickedPiece = e.target.getAttribute('data-color');
     const whoseTurn = allPlayers[turn];
     if(clickedPiece === whoseTurn){
@@ -133,7 +149,6 @@ function move(t,e){
         const getProps = currentPlayers.find(el => el.color === whoseTurn);
     
         if(randomNumber === 6){
-            // console.log({props: getProps, pos, piece, typ: typeof piece})
             if(!getProps[pos].isActive){
                 t.parentElement.innerHTML = ``;
                 document.getElementById(`pos${getProps.startPosition}`).innerHTML = ``;
@@ -145,7 +160,6 @@ function move(t,e){
                 return;
             } else {
                 const getTurn = disabled.find(el => el.color === allPlayers[turn]);
-                console.log({getTurn})
                 if(!getTurn.disabledStatus){
                     getProps[pos].sumOfMoves += randomNumber;
                     const { position: currentPosition } = getProps[pos]
@@ -161,8 +175,6 @@ function move(t,e){
                 getProps[pos].sumOfMoves += randomNumber;
                 const { position: currentPosition } = getProps[pos]
                 getProps[pos].position += randomNumber;
-                console.log('line 149')
-                console.log({sum2: getProps[pos].sumOfMoves});
                 tileStatus(currentPosition, randomNumber, piece, t);
                 // document.getElementById(`pos${(currentPosition + randomNumber) > 52 ? 1 : (currentPosition + randomNumber)}`).innerHTML = piece;
                 changeTurn();
@@ -173,7 +185,6 @@ function move(t,e){
 }
 
 function roll(t,event){
-    console.log('clicked to roll', {rollStatus})
     if(rollStatus){
         // randomNumber = Math.floor(Math.random() * 6) + 1;
         if(disabled[turn].disabledStatus) disabled[turn].disabledStatus = false;
@@ -183,23 +194,29 @@ function roll(t,event){
     }
 }
 
-function convertWordsToNumber(strsplit){
-    const [checker,word] = strsplit.split('piece');
-    if(checker.length){
-        if(checker === 'one') return 1;
-        if(checker === 'two') return 2;
-        if(checker === 'three') return 3;
-        if(checker === 'four') return 4;
-    } else {
-        if(word === 'one') return 1;
-        if(word === 'two') return 2;
-        if(word === 'three') return 3;
-        if(word === 'four') return 4;
-    }
+// function convertWordsToNumber(strsplit){
+//     const [checker,word] = strsplit.split('piece');
+//     if(checker.length){
+//         if(checker === 'one') return 1;
+//         if(checker === 'two') return 2;
+//         if(checker === 'three') return 3;
+//         if(checker === 'four') return 4;
+//     } else {
+//         if(word === 'one') return 1;
+//         if(word === 'two') return 2;
+//         if(word === 'three') return 3;
+//         if(word === 'four') return 4;
+//     }
+// };
+
+function convertNumbersToWords(num){
+    if(num === 1) return 'one';
+    if(num === 2) return 'two';
+    if(num === 3) return 'three';
+    if(num === 4) return 'four';
 };
 
 function tileStatus(currentPosition, randomNumber, piece, id){
-    console.log({note: 'what is the value????',currentPosition, randomNumber, piece, id})
     let answer = currentPosition+randomNumber
     let getString = piece.getAttribute('id');
     const pieceNum = Number(getString[getString.length - 1]);
@@ -207,8 +224,6 @@ function tileStatus(currentPosition, randomNumber, piece, id){
     const player = currentPlayers.find(el => el.color === getString);
     const foundPiece = player.findPiece(pieceNum);
     const { sumOfMoves } = foundPiece;
-
-    console.log({foundPiece, sum: sumOfMoves})
 
     if(answer > 52){
         answer -= 52;
@@ -235,29 +250,28 @@ function tileStatus(currentPosition, randomNumber, piece, id){
         foundPiece.homeRun = true;
         return
     }
-    // console.log({currentPosition, randomNumber, piece, id, answer, checkPosition: piece.getAttribute('id')})
     
     const isProtectedFrom = document.getElementById(`pos${currentPosition}`).getAttribute('data-protected');
     const isProtectedTo = document.getElementById(`pos${answer}`).getAttribute('data-protected');
     const piecesOnSquare = [].slice.call(document.getElementById(`pos${(answer)}`).children);
-
-    console.log({isProtectedFrom, status: !!isProtectedFrom, isProtectedTo, status1: !!isProtectedTo, piecesOnSquare});
     
     //check if future tile is protected
     if(isProtectedTo){
         const tilesOnfoundProtectedTile = protectedTileStatus.find(tile => tile.tileNumber === answer).currentPieces;
-        if(piecesOnSquare.length === 1 && tilesOnfoundProtectedTile.length === 0) document.getElementById(`pos${answer}`).innerHTML = '';
-        console.log({piecesOnSquare, length: piecesOnSquare.length, turn: allPlayers[turn]});
+        // using a different approach for a stylistick difference i.e making the pieces appear on the board
+        // tilesOnfoundProtectedTile.push(createTile(piece));
+        // if(pi, trueecesOnSquare.length === 1 && tilesOnfoundProtectedTile.length === 0) document.getElementById(`pos${answer}`).innerHTML = '';
+        // this approach hides the tiles untill its there turn to play
+        tilesOnfoundProtectedTile.push(piece);
+        document.getElementById(`pos${answer}`).innerHTML = '';
         // how many peices are on the board
-        console.log({piece, foundPiece});
-        tilesOnfoundProtectedTile.push(createTile(piece));
+        foundPiece.hidden = true;
         document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
     } else {
         // when future title is not protected
         if(piecesOnSquare.length === 1 && allPlayers[turn] !== piecesOnSquare[0].getAttribute('data-color')){
             // if only one piece and different color return him to default location
             const back2Default = document.getElementById(`pos${(answer)}`).children[0];
-            // console.log({pieces: piecesOnSquare, selected: piecesOnSquare[0]})
             const foundIndex = currentPlayers.findIndex(player => player.color === piecesOnSquare[0].getAttribute('data-color'));
             currentPlayers[foundIndex].reset(back2Default.getAttribute('data-arg'))
             document.getElementById(`${back2Default.getAttribute('data-color')}-${back2Default.getAttribute('data-arg')}`).append(back2Default);
@@ -266,32 +280,53 @@ function tileStatus(currentPosition, randomNumber, piece, id){
             document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
         }
     } 
-    console.log('fullstop');
+    
     // check sum to see if you will divert to homeStretch
-    console.log({piece, appended: document.getElementById(id), id});
+    
     // document.getElementById(`pos${checkMyAnswer}`).appendChild(piece);
     document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
     // handle the tile you are leaving
     if(isProtectedFrom){
         // find out how many pieces are in the same position
+        let howManyOnTile = null;
+        protectedTileStatus.forEach(protectedTile => {
+            if(protectedTile.tileNumber === currentPosition){
+                const solution = protectedTile.currentPieces.filter(p => p.dataset.arg !== `piece${convertNumbersToWords(foundPiece.pieceNumber)}`);
+                protectedTile.currentPieces = solution;
+                howManyOnTile = solution;
+
+            }
+        });
+        foundPiece.hidden = false;
         // if none empty then place star    
-        document.getElementById(`pos${currentPosition}`).innerHTML = '';    
-        const star = document.createElement('span');
-        star.setAttribute('class','star');
-        star.innerHTML = `&#9733`;
-        document.getElementById(`pos${currentPosition}`).appendChild(star);
+        if(!howManyOnTile.length){
+            document.getElementById(`pos${currentPosition}`).innerHTML = '';    
+            const star = document.createElement('span');
+            star.setAttribute('class','star');
+            star.innerHTML = `&#9733`;
+            document.getElementById(`pos${currentPosition}`).appendChild(star);
+        } else {
+            document.getElementById(`pos${currentPosition}`).appendChild(createTile(howManyOnTile[howManyOnTile.length - 1], true));
+        }
         // otherwise search for pieces on this position and return them
     } else {
         document.getElementById(`pos${currentPosition}`).innerHTML = ``;
     }
 };
 
-function createTile(piece){
+function createTile(piece, checker){
     // Create the inner div
     const innerDiv = document.createElement('div');
-    innerDiv.id = piece.getAttribute('id');
-    innerDiv.setAttribute('data-color', piece.getAttribute('dataset').color);
-    innerDiv.setAttribute('data-arg', piece.getAttribute('dataset').arg);
+    
+    if(checker){
+        innerDiv.id = piece.getAttribute('id');
+        innerDiv.setAttribute('data-color', piece.dataset.color);
+        innerDiv.setAttribute('data-arg', piece.dataset.arg);    
+    } else {
+        innerDiv.id = piece.id;
+        innerDiv.setAttribute('data-color', piece.color);
+        innerDiv.setAttribute('data-arg', piece.arg);
+    }
     innerDiv.setAttribute('onclick', 'move(this,event)');
     
     return innerDiv;
@@ -301,3 +336,4 @@ function createTile(piece){
 // next steps
 // populate and de-populate tileStatus Array
 // continue from line 253
+// dont forget to handle same color tiles on the same block 
