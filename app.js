@@ -28,7 +28,6 @@ class Piece {
         this.startPosition = color === "blue" ? 2 : color === "red" ? 15 : color === "green" ? 28 : 41;
         this.pieceone = {
             isActive: false,
-            protection: false,
             pieceNumber: 1,
             finish: false,
             sumOfMoves: -6,
@@ -38,7 +37,6 @@ class Piece {
         };
         this.piecetwo = {
             isActive: false,
-            protection: false,
             pieceNumber: 2,
             finish: false,
             sumOfMoves: -6,
@@ -48,7 +46,6 @@ class Piece {
         };
         this.piecethree = {
             isActive: false,
-            protection: false,
             pieceNumber: 3,
             finish: false,
             sumOfMoves: -6,
@@ -58,7 +55,6 @@ class Piece {
         };
         this.piecefour = {
             isActive: false,
-            protection: false,
             pieceNumber: 4,
             finish: false,
             sumOfMoves: -6,
@@ -100,35 +96,24 @@ function playSingleTile(){
         // Does the current Player have any active pieces
         const activePieces = currentPlayers[turn].findActivePieces();
         const numOfActivePieces = activePieces.length;
-        console.log({activePieces})
+        const whoseTurn = allPlayers[turn];
         // if(numOfActivePieces > 1) return;
         if(numOfActivePieces === 1){
             // move piece by randomNumber
             const piece = currentPlayers[turn].findActive();
-            const whoseTurn = allPlayers[turn];
             // move piece
-            const pieceToMove = document.getElementById(`${whoseTurn}${piece.pieceNumber}`);
+            automaticMove(piece, whoseTurn);
             console.log('line 89')
-            piece.sumOfMoves += randomNumber;
-            tileStatus(piece.position, randomNumber, pieceToMove, `pos${piece.position}`);
-            if(piece.sumOfMoves < 50){
-                piece.position  = piece.position + randomNumber;
-            }
         } else if (numOfActivePieces === 2 && activePieces[0].position === activePieces[1].position){
-            const whoseTurn = allPlayers[turn];
             // move piece
-            const pieceToMove = document.getElementById(`${whoseTurn}${activePieces[1].pieceNumber}`);
-            console.log('line 121', pieceToMove);
-            activePieces[1].sumOfMoves += randomNumber;
-            tileStatus(activePieces[0].position, randomNumber, pieceToMove, `pos${activePieces[1].position}`);
-            if(activePieces[1].sumOfMoves < 50){
-                activePieces[1].position  = activePieces[1].position + randomNumber;
-            }
+            automaticMove(activePieces[1], whoseTurn);
+            console.log('line 121');
+        } else if(numOfActivePieces === 0){
+            randomNumber = 0;
+            changeTurn();  
+            rollStatus = true;        
         } 
-        randomNumber = 0;
-        // if no active piece
-        changeTurn();  
-        rollStatus = true;
+        
     }
 }
 
@@ -148,6 +133,19 @@ function changeTurn(){
             document.getElementById(`pos${position}`).appendChild(newTile);
         });
     };
+}
+
+function automaticMove(piece, turn){
+    const pieceToMove = document.getElementById(`${turn}${piece.pieceNumber}`);
+    piece.sumOfMoves += randomNumber;
+    tileStatus(piece.position, randomNumber, pieceToMove, `pos${piece.position}`);
+    if(piece.sumOfMoves < 50){
+        piece.position  = piece.position + randomNumber;
+    }
+    randomNumber = 0;
+    // if no active piece
+    changeTurn();  
+    rollStatus = true;
 }
 
 function move(t,e){
@@ -173,27 +171,20 @@ function move(t,e){
                 protectedTileStatus.find(tile => tile.tileNumber === currentPlayer.startPosition).currentPieces.push(piece);
                 changeTurn();
             } else {
-                // const disabledTile = disabled.find(el => el.color === allPlayers[turn]);
-                // console.log({disabledStatus: !disabledTile.disabledStatus})
-                // if(!disabledTile.disabledStatus){
                     currentPlayer[pos].sumOfMoves += randomNumber;
-                    const { position: currentPosition } = currentPlayer[pos]
+                    const { position: currentPosition } = currentPlayer[pos];
                     currentPlayer[pos].position += randomNumber;
-                    // check if the cell is protected
-                    console.log('line 140')
                     tileStatus(currentPosition, randomNumber, piece);
+                    // check if the cell is protected
                     // disable tile so it can't move again with the same random number
                     // disabledTile.disabledStatus = true
-                // }
             }
         } else {
             if(currentPlayer[pos].isActive){
                 currentPlayer[pos].sumOfMoves += randomNumber;
-                const { position: currentPosition } = currentPlayer[pos]
+                const { position: currentPosition } = currentPlayer[pos];
                 currentPlayer[pos].position += randomNumber;
                 tileStatus(currentPosition, randomNumber, piece, t);
-                console.log({currentPosition, randomNumber, piece, t})
-                // document.getElementById(`pos${(currentPosition + randomNumber) > 52 ? 1 : (currentPosition + randomNumber)}`).innerHTML = piece;
                 changeTurn();
             }
         }
@@ -204,8 +195,6 @@ function move(t,e){
 
 function roll(t,event){
     if(rollStatus){
-        // turn off disable movement on tile
-        // if(disabled[turn].disabledStatus) disabled[turn].disabledStatus = false;
         // randomNumber = Math.floor(Math.random() * 6) + 1;
         randomNumber = Number(prompt('Please Enter A Number'));
         t.style.backgroundImage = `url(./assets/images/${randomNumber}.png)`;
@@ -275,18 +264,23 @@ function tileStatus(currentPosition, randomNumber, piece, id){
         document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
     } else {
         // when future title is not protected
-        if(piecesOnSquare.length === 1 && allPlayers[turn] !== piecesOnSquare[0].getAttribute('data-color')){
-            // if only one piece and different color return him to default location
-            const back2Default = document.getElementById(`pos${(answer)}`).children[0];
-            const foundIndex = currentPlayers.findIndex(player => player.color === piecesOnSquare[0].getAttribute('data-color'));
-            currentPlayers[foundIndex].reset(back2Default.getAttribute('data-arg'))
-            document.getElementById(`${back2Default.getAttribute('data-color')}-${back2Default.getAttribute('data-arg')}`).append(back2Default);
-            // document.getElementById(`pos${(answer)}`).innerHTML = '';
-        } else {
-            // *************************** continue from here ****************************
-            
-            document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
-        }
+        console.log({piecesOnSquare})
+        if(piecesOnSquare.length === 1){
+            if(allPlayers[turn] !== piecesOnSquare[0].getAttribute('data-color')){
+                // if only one piece and different color return him to default location
+                const back2Default = document.getElementById(`pos${(answer)}`).children[0];
+                const foundIndex = currentPlayers.findIndex(player => player.color === piecesOnSquare[0].getAttribute('data-color'));
+                currentPlayers[foundIndex].reset(back2Default.getAttribute('data-arg'))
+                document.getElementById(`${back2Default.getAttribute('data-color')}-${back2Default.getAttribute('data-arg')}`).append(back2Default);
+                // document.getElementById(`pos${(answer)}`).innerHTML = '';
+            } else {
+                const pieceToHide = document.getElementById(`pos${(answer)}`).children[0].getAttribute('data-arg');
+                player[pieceToHide].hidden = true;
+                foundPiece.hidden = true;
+                document.getElementById(`pos${answer}`).innerHTML = '';
+                document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
+            }
+        };    
     } 
     
     // check sum to see if you will divert to homeStretch
@@ -317,6 +311,8 @@ function tileStatus(currentPosition, randomNumber, piece, id){
         }
         // otherwise search for pieces on this position and return them
     } else {
+        if(foundPiece.hidden) foundPiece.hidden =  false;
+        console.log('*************************handle here *************************')
         document.getElementById(`pos${currentPosition}`).innerHTML = ``;
     }
 };
