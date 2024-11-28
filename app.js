@@ -250,6 +250,49 @@ function tileStatus(currentPosition, randomNumber, piece, id){
     const isProtectedTo = document.getElementById(`pos${answer}`).getAttribute('data-protected');
     const piecesOnSquare = [].slice.call(document.getElementById(`pos${(answer)}`).children);
     
+    if(isProtectedFrom){
+        // find out how many pieces are in the same position
+        let howManyOnTile = null;
+        protectedTileStatus.forEach(protectedTile => {
+            if(protectedTile.tileNumber === currentPosition){
+                const solution = protectedTile.currentPieces.filter(p => p.dataset.arg !== `piece${convertNumbersToWords(foundPiece.pieceNumber)}`);
+                protectedTile.currentPieces = solution;
+                howManyOnTile = solution;
+            }
+        });
+        console.log({howManyOnTile, num: howManyOnTile.length})
+        foundPiece.hidden = false;
+        // if none empty then place star    
+        if(!howManyOnTile.length){
+            document.getElementById(`pos${currentPosition}`).innerHTML = '';    
+            const star = document.createElement('span');
+            star.setAttribute('class','star');
+            star.innerHTML = `&#9733`;
+            document.getElementById(`pos${currentPosition}`).appendChild(star);
+        } else {
+            document.getElementById(`pos${currentPosition}`).innerHTML = "";
+            document.getElementById(`pos${currentPosition}`).appendChild(createTile(howManyOnTile[howManyOnTile.length - 1], true));
+        }
+        // otherwise search for pieces on this position and return them
+    } else {
+        console.log('not hereeeeeeeeeeeeee')
+        if(foundPiece.hidden){
+            const currentPlayersHidden = player.piecesHidden().filter(p => p.position === currentPosition);
+            console.log({currentPlayersHidden})
+            currentPlayersHidden.forEach((p,len) => {
+                console.log({p,len})
+                p.hidden = false
+                if(p.pieceNumber !== foundPiece.pieceNumber){
+                    const color = allPlayers[turn];
+                    document.getElementById(`pos${currentPosition}`).innerHTML = ``;    
+                    document.getElementById(`pos${currentPosition}`).appendChild(createTile({id: `${color}${p.pieceNumber}`, arg: `piece${convertNumbersToWords(p.pieceNumber)}`,color },false));    
+                }
+            });
+        } else {
+            document.getElementById(`pos${currentPosition}`).innerHTML = ``;
+        } 
+    }
+    
     //check if future tile is protected
     if(isProtectedTo){
         const tilesOnfoundProtectedTile = protectedTileStatus.find(tile => tile.tileNumber === answer).currentPieces;
@@ -261,7 +304,8 @@ function tileStatus(currentPosition, randomNumber, piece, id){
         document.getElementById(`pos${answer}`).innerHTML = '';
         // how many peices are on the board
         foundPiece.hidden = true;
-        document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
+        // document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
+        document.getElementById(`pos${answer}`).appendChild(createTile(piece, true));
     } else {
         // when future title is not protected
         console.log({piecesOnSquare})
@@ -277,44 +321,21 @@ function tileStatus(currentPosition, randomNumber, piece, id){
                 const pieceToHide = document.getElementById(`pos${(answer)}`).children[0].getAttribute('data-arg');
                 player[pieceToHide].hidden = true;
                 foundPiece.hidden = true;
+                console.log('*************find me**************')
                 document.getElementById(`pos${answer}`).innerHTML = '';
-                document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
+                // document.getElementById(`pos${answer}`).appendChild(createTile(piece, true));
+                // document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
             }
-        };    
+        } 
+        document.getElementById(`pos${answer}`).appendChild(createTile(piece, true));    
     } 
     
     // check sum to see if you will divert to homeStretch
     
     // document.getElementById(`pos${checkMyAnswer}`).appendChild(piece);
-    document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
+    // document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
+    // document.getElementById(`pos${answer}`).appendChild(createTile(piece, true));
     // handle the tile you are leaving
-    if(isProtectedFrom){
-        // find out how many pieces are in the same position
-        let howManyOnTile = null;
-        protectedTileStatus.forEach(protectedTile => {
-            if(protectedTile.tileNumber === currentPosition){
-                const solution = protectedTile.currentPieces.filter(p => p.dataset.arg !== `piece${convertNumbersToWords(foundPiece.pieceNumber)}`);
-                protectedTile.currentPieces = solution;
-                howManyOnTile = solution;
-            }
-        });
-        foundPiece.hidden = false;
-        // if none empty then place star    
-        if(!howManyOnTile.length){
-            document.getElementById(`pos${currentPosition}`).innerHTML = '';    
-            const star = document.createElement('span');
-            star.setAttribute('class','star');
-            star.innerHTML = `&#9733`;
-            document.getElementById(`pos${currentPosition}`).appendChild(star);
-        } else {
-            document.getElementById(`pos${currentPosition}`).appendChild(createTile(howManyOnTile[howManyOnTile.length - 1], true));
-        }
-        // otherwise search for pieces on this position and return them
-    } else {
-        if(foundPiece.hidden) foundPiece.hidden =  false;
-        console.log('*************************handle here *************************')
-        document.getElementById(`pos${currentPosition}`).innerHTML = ``;
-    }
 };
 
 function createTile(piece, checker){
@@ -337,6 +358,6 @@ function createTile(piece, checker){
 
 
 // next steps
-// populate and de-populate tileStatus Array
 // next step below *********************
 // dont forget to handle same color tiles on the same unprotected block 
+// decide about protectedto and protectedfrom which comes first because of the hidden property or create a time every time you are going to a new tile
