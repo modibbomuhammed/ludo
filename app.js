@@ -211,7 +211,8 @@ function convertNumbersToWords(num){
     if(num === 4) return 'four';
 };
 
-function tileStatus(currentPosition, randomNumber, piece, id){
+function tileStatus(currentPosition, randomNumber, piece){
+    console.log({piece});
     let answer = currentPosition+randomNumber
     let getString = piece.getAttribute('id');
     const pieceNum = Number(getString[getString.length - 1]);
@@ -236,9 +237,16 @@ function tileStatus(currentPosition, randomNumber, piece, id){
             foundPiece.finish = true;
             // code to remove him from eligible players when all pieces are off the board
             if(player.checkFinish()){
-
+                player.finishGame = true;
+                console.log({currentPlayers, note: 'before'});
+                currentPlayers = currentPlayers.filter(({color}) => color !== player.color);
+                console.log({currentPlayers, note: 'after'});
+                alert(`Game Over for ${allPlayers[turn]}`);
+                if(!currentPlayers.length){
+                    alert('Game Over 4 All')
+                }
             }
-            return;
+            // return;
         } else {
             foundPiece.sumOfMoves = sumOfMoves - randomNumber;
         }
@@ -275,7 +283,6 @@ function tileStatus(currentPosition, randomNumber, piece, id){
         }
         // otherwise search for pieces on this position and return them
     } else {
-        console.log('not hereeeeeeeeeeeeee')
         if(foundPiece.hidden){
             const currentPlayersHidden = player.piecesHidden().filter(p => p.position === currentPosition);
             console.log({currentPlayersHidden})
@@ -359,5 +366,5 @@ function createTile(piece, checker){
 
 // next steps
 // next step below *********************
-// dont forget to handle same color tiles on the same unprotected block 
-// decide about protectedto and protectedfrom which comes first because of the hidden property or create a time every time you are going to a new tile
+// line 238 check player finish
+// create game finish method
