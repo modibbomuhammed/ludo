@@ -1,7 +1,7 @@
 // Ludo Game Play
 
 const allPlayers = ["blue","red","green","yellow"];
-
+let numberReset = false;
 const numberOfPlayer = Number(prompt('Choose Number Of Players between 1 - 4'));
 
 let currentPlayers = allPlayers.slice(0,numberOfPlayer);
@@ -102,13 +102,14 @@ function playSingleTile(){
             // move piece by randomNumber
             const piece = currentPlayers[turn].findActive();
             // move piece
+            console.log('line 105', piece)
             automaticMove(piece, whoseTurn);
-            console.log('line 89')
         } else if (numOfActivePieces === 2 && activePieces[0].position === activePieces[1].position){
             // move piece
+            console.log('line 109', piece)
             automaticMove(activePieces[1], whoseTurn);
-            console.log('line 121');
         } else if(numOfActivePieces === 0){
+            console.log('line 112');
             randomNumber = 0;
             changeTurn();  
             rollStatus = true;        
@@ -128,6 +129,7 @@ function changeTurn(){
     if(hiddenPieces.length){
         hiddenPieces.forEach(({ pieceNumber, position }) => {
             const color = allPlayers[turn];
+            console.log('line 132', { pieceNumber, position, randomNumber, turn: allPlayers[turn] });
             const newTile = createTile({id: `${color}${pieceNumber}`, arg: `piece${convertNumbersToWords(pieceNumber)}`,color },false);
             document.getElementById(`pos${position}`).innerHTML = '';
             document.getElementById(`pos${position}`).appendChild(newTile);
@@ -138,10 +140,14 @@ function changeTurn(){
 function automaticMove(piece, turn){
     const pieceToMove = document.getElementById(`${turn}${piece.pieceNumber}`);
     piece.sumOfMoves += randomNumber;
+    console.log({position:piece.position, note: 'line 143' })
     tileStatus(piece.position, randomNumber, pieceToMove, `pos${piece.position}`);
-    if(piece.sumOfMoves < 50){
+    if(piece.sumOfMoves < 50 && !numberReset){
+        console.log('getting here')
         piece.position  = piece.position + randomNumber;
     }
+    if(numberReset) numberReset = !numberReset;
+    console.log({position:piece.position, note: 'line 148' })
     randomNumber = 0;
     // if no active piece
     changeTurn();  
@@ -149,7 +155,7 @@ function automaticMove(piece, turn){
 }
 
 function move(t,e){
-    if(randomNumber === 0) return;
+    // if(randomNumber === 0) return;
     const clickedPiece = e.target.getAttribute('data-color');
     const whoseTurn = allPlayers[turn];
     if(clickedPiece === whoseTurn){
@@ -190,7 +196,7 @@ function move(t,e){
         }
         rollStatus = true;
     }
-    randomNumber = 0;
+    // randomNumber = 0;
 }
 
 function roll(t,event){
@@ -212,7 +218,6 @@ function convertNumbersToWords(num){
 };
 
 function tileStatus(currentPosition, randomNumber, piece){
-    console.log({piece});
     let answer = currentPosition+randomNumber
     let getString = piece.getAttribute('id');
     const pieceNum = Number(getString[getString.length - 1]);
@@ -220,10 +225,12 @@ function tileStatus(currentPosition, randomNumber, piece){
     const player = currentPlayers.find(el => el.color === getString);
     const foundPiece = player.findPiece(pieceNum);
     const { sumOfMoves } = foundPiece;
+    console.log({piece, foundPiece, protectedTileStatus});
 
     if(answer > 52){
         answer -= 52;
         foundPiece.position = answer;
+        numberReset = true;
     } 
 
     if(sumOfMoves > 50){
@@ -266,6 +273,7 @@ function tileStatus(currentPosition, randomNumber, piece){
                 const solution = protectedTile.currentPieces.filter(p => p.dataset.arg !== `piece${convertNumbersToWords(foundPiece.pieceNumber)}`);
                 protectedTile.currentPieces = solution;
                 howManyOnTile = solution;
+                console.log({solution});
             }
         });
         console.log({howManyOnTile, num: howManyOnTile.length})
@@ -279,6 +287,7 @@ function tileStatus(currentPosition, randomNumber, piece){
             document.getElementById(`pos${currentPosition}`).appendChild(star);
         } else {
             document.getElementById(`pos${currentPosition}`).innerHTML = "";
+            console.log('line 285')
             document.getElementById(`pos${currentPosition}`).appendChild(createTile(howManyOnTile[howManyOnTile.length - 1], true));
         }
         // otherwise search for pieces on this position and return them
@@ -286,13 +295,22 @@ function tileStatus(currentPosition, randomNumber, piece){
         if(foundPiece.hidden){
             const currentPlayersHidden = player.piecesHidden().filter(p => p.position === currentPosition);
             console.log({currentPlayersHidden})
-            currentPlayersHidden.forEach((p,len) => {
+            currentPlayersHidden.forEach((p,index,len) => {
                 console.log({p,len})
-                p.hidden = false
-                if(p.pieceNumber !== foundPiece.pieceNumber){
-                    const color = allPlayers[turn];
-                    document.getElementById(`pos${currentPosition}`).innerHTML = ``;    
-                    document.getElementById(`pos${currentPosition}`).appendChild(createTile({id: `${color}${p.pieceNumber}`, arg: `piece${convertNumbersToWords(p.pieceNumber)}`,color },false));    
+                const color = allPlayers[turn];
+                if(len === 2){
+                    p.hidden = false;
+                    if(p.pieceNumber !== foundPiece.pieceNumber){
+                        document.getElementById(`pos${currentPosition}`).innerHTML = ``;
+                        console.log('line 299')    
+                        document.getElementById(`pos${currentPosition}`).appendChild(createTile({id: `${color}${p.pieceNumber}`, arg: `piece${convertNumbersToWords(p.pieceNumber)}`,color },false));    
+                    }
+                }
+                foundPiece.hidden = false;
+                if(index === (length - 1)){
+                    document.getElementById(`pos${currentPosition}`).innerHTML = ``;
+                    console.log('line 307');    
+                    document.getElementById(`pos${currentPosition}`).appendChild(createTile({id: `${color}${p.pieceNumber}`, arg: `piece${convertNumbersToWords(p.pieceNumber)}`,color },false));
                 }
             });
         } else {
@@ -302,6 +320,7 @@ function tileStatus(currentPosition, randomNumber, piece){
     
     //check if future tile is protected
     if(isProtectedTo){
+        console.log('line 307', {piece})
         const tilesOnfoundProtectedTile = protectedTileStatus.find(tile => tile.tileNumber === answer).currentPieces;
         // using a different approach for a stylistick difference i.e making the pieces appear on the board
         // tilesOnfoundProtectedTile.push(createTile(piece));
@@ -312,6 +331,7 @@ function tileStatus(currentPosition, randomNumber, piece){
         // how many peices are on the board
         foundPiece.hidden = true;
         // document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
+        console.log('line 321');
         document.getElementById(`pos${answer}`).appendChild(createTile(piece, true));
     } else {
         // when future title is not protected
@@ -334,7 +354,10 @@ function tileStatus(currentPosition, randomNumber, piece){
                 // document.getElementById(`pos${answer}`).appendChild(document.getElementById(`${piece.getAttribute('id')}`));
             }
         } 
-        document.getElementById(`pos${answer}`).appendChild(createTile(piece, true));    
+        const whoAreYou = createTile(piece, true);
+        console.log({ whoAreYou, foundPiece})
+        document.getElementById(`pos${answer}`).appendChild(whoAreYou);    
+        // document.getElementById(`pos${answer}`).appendChild(createTile(piece, true));    
     } 
     
     // check sum to see if you will divert to homeStretch
@@ -368,3 +391,5 @@ function createTile(piece, checker){
 // next step below *********************
 // line 238 check player finish
 // create game finish method
+// The error is from the hidden function with the changeTurn function 
+// the position of the piece is getting altered 
